@@ -3,19 +3,39 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "hang.h"
+#include <ctime>
+#include <random>
+#include <cctype>
 
 class words
 {
-    words() {
-        _WORDS[0] = "strawbery";
-        _WORDS[1] = "apple";
-        _WORDS[2] = "banana";
-        _WORDS[3] = "grape";
-        _WORDS[4] = "apple";
-        _WORDS[5] = "orange";
-    }
 private:
-    std::string _WORDS[5];
-    void DisWord(std::string& word, const std::vector<bool>& guessed);
+    std::vector<std::string> _WORDS;
+    std::string _word;
+    void getValidGuess(char& guess);
+public:
 
+    bool guess(char G, std::string& word, std::vector<char>& thing);
+
+    words() {
+        _WORDS = { "strawberry", "apple", "banana", "grape", "orange",
+           "kiwi", "blueberry", "pear", "pineapple", "mango",
+           "peach", "lemon", "watermelon", "cherry", "plum",
+           "apricot", "papaya", "pomegranate", "fig", "coconut",
+           "avocado", "applesauce", "tangerine", "nectarine", "elderberry",
+           "blackberry", "dragonfruit", "cantaloupe", "jackfruit", "lime" };
+
+        std::random_device rd;
+        std::mt19937 gen(rd());  // Генератор на основе random_device
+        std::uniform_int_distribution<> distrib(0, _WORDS.size() - 1);  // Равномерное распределение
+        _word = _WORDS[distrib(gen)];
+    }
+
+
+    void DisWord(std::string& word, std::vector<char>& thing);
+    bool isSolved(std::string& word, std::vector<char>& thing);
+    std::string GetWord() {
+        return _word;
+    }
 };

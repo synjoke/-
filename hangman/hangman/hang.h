@@ -8,7 +8,7 @@ class hang
 {
 private:
 int _Stad = 0;
-int _MaxTry;
+static const int _MaxTry;
 const std::vector<std::string> _HANGMAN = {
     "\n\n\n\n\n\n=========" ,
     "\n\n\n\n\n  |\n=========" ,
@@ -19,10 +19,10 @@ const std::vector<std::string> _HANGMAN = {
     "  ____\n  |  |\n  |  O\n  | /|\\\n  |  |\n  | / \\\n  |\n========="
 };
 
-void NextStud(int tries);
 public:
-
-
-
+    void NextStud(int tries);
+    static const int GetTry() {
+        return _MaxTry;
+    }
 };
 

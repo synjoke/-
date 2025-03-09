@@ -1,85 +1,42 @@
 ﻿#include <iostream>
-#include <vector>
-#include <string>
-#include <cstdlib>
-#include <ctime>
+#include "words.h"
+#include "hang.h"
 
-using namespace std;
 
-const vector<string> WORDS = { "apple", "banana", "cherry", "grape", "orange" };
-const int MAX_TRIES = 6;
-
-void displayWord(const string& word, const vector<bool>& guessed) {
-    for (size_t i = 0; i < word.length(); i++) {
-        if (guessed[i]) {
-            cout << word[i] << " ";
-        }
-        else {
-            cout << "_ ";
-        }
-    }
-    cout << endl;
-}
-
-bool isWordGuessed(const vector<bool>& guessed) {
-    for (bool g : guessed) {
-        if (!g) return false;
-    }
-    return true;
-}
-void displayHangman(int tries) {
-    const vector<string> HANGMAN = {
-        "\n\n\n\n\n\n=========" ,
-        "\n\n\n\n\n  |\n=========" ,
-        "\n\n\n\n  |\n  |\n=========" ,
-        "\n\n\n  |\n  |\n  |\n=========" ,
-        "\n\n  |\n  |\n  |\n  |\n=========" ,
-        "\n  |\n  |\n  |\n  |\n  |\n=========" ,
-        "  ____\n  |  |\n  |  O\n  | /|\\\n  |  |\n  | / \\\n  |\n========="
-    };
-    cout << HANGMAN[tries] << endl;
-}
+hang Hang = hang();
+words Word;
 
 int main() {
     setlocale(0, "ru");
-    srand(time(0));
-    string word = WORDS[rand() % WORDS.size()];
-    vector<bool> guessed(word.length(), false);
+    std::string word = Word.GetWord();  
+
+    std::vector<char> gueses(word.length(), '_');
     int tries = 0;
+    std::cout << "Добро пожаловать в игру 'Виселица'!" << std::endl;
+    while (tries < Hang.GetTry()) {
+        Hang.NextStud(tries);
+        Word.DisWord(word, gueses);
 
-    cout << "Добро пожаловать в игру 'Виселица'!" << endl;
+        char guess = 'a';
 
-    while (tries < MAX_TRIES) {
-        displayHangman(tries);
-        displayWord(word, guessed);
-        cout << "Введите букву: ";
-        char guess;
-        cin >> guess;
-
-        bool found = false;
-        for (size_t i = 0; i < word.length(); i++) {
-            if (word[i] == guess) {
-                guessed[i] = true;
-                found = true;
+        bool isFound = Word.guess(guess, word, gueses);
+        if (!isFound) {
+            tries++;
+            system("cls");
+            std::cout << "Неправильно, осталось " << (Hang.GetTry() - tries) << " попыток."<<std::endl;
+        }
+        else {
+            system("cls");
+            std::cout << "Правильно, осталось " << (Hang.GetTry() - tries) << " попыток." << std::endl;
+            if (Word.isSolved(word, gueses)) {
+                Hang.NextStud(tries);
+                break;
             }
         }
-
-        if (!found) {
-            tries++;
-            cout << "Ошибка! Осталось попыток: " << (MAX_TRIES - tries) << endl;
-        }
-
-        if (isWordGuessed(guessed)) {
-            cout << "Поздравляем! Вы угадали слово: " << word << endl;
-            break;
-        }
+    }
+    if (tries == Hang.GetTry()) {
+        Hang.NextStud(tries);
+        std::cout << "Вы проиграли! Загаданное слово: " << word << std::endl;
     }
 
-    displayHangman(tries);
-
-    if (tries == MAX_TRIES) {
-        cout << "Вы проиграли! Загаданное слово: " << word << endl;
-    }
-
-    return 0;
 }
